@@ -24,3 +24,5 @@ connection.query(
 		// console.log(fields) // fields contains extra meta data about results, if available
 	}
 )
+
+connection.end()
