@@ -19,8 +19,8 @@ const connection = mysql.createConnection({
 connection.query(
 	'SELECT * FROM `events` WHERE `name` = "Christian Broberg"',
 	function (err, results, fields) {
-		console.log(err)
+		// console.log(err)
 		console.log(results) // results contains rows returned by server
-		console.log(fields) // fields contains extra meta data about results, if available
+		// console.log(fields) // fields contains extra meta data about results, if available
 	}
 )
