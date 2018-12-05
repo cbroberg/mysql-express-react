@@ -1,11 +1,8 @@
 require('dotenv').load()
-// get the client
 const mysql = require('mysql2')
-// const mysql = require('mysql')
 
 const { DB_HOST, DB_USER, DATABASE, PASSWORD } = process.env
 
-// create the connection to database
 const connection = mysql.createConnection({
 	host: DB_HOST,
 	user: DB_USER,
@@ -13,7 +10,6 @@ const connection = mysql.createConnection({
 	database: DATABASE
 })
 
-// simple query
 connection.query(
 	'SELECT * FROM `events` WHERE `name` = "Christian Broberg"',
 	function (err, results, fields) {
