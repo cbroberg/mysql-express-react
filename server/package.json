@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "mysql-express server api",
+  "main": "server.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cbroberg/mysql-express-react.git"
+  },
+  "keywords": [
+    "mysql",
+    "express",
+    "api",
+    "server"
+  ],
+  "author": "Christian Broberg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cbroberg/mysql-express-react/issues"
+  },
+  "homepage": "https://github.com/cbroberg/mysql-express-react#readme",
+  "dependencies": {
+    "apisauce": "^1.0.1",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "mysql2": "^1.6.4",
+    "senti-apicore": "0.0.14"
+  }
+}
