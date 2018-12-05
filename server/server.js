@@ -1,11 +1,8 @@
-require('dotenv').load()
-// get the client
+const express = require('express')
 const mysql = require('mysql2')
-// const mysql = require('mysql')
 
 const { DB_HOST, DB_USER, DATABASE, PASSWORD } = process.env
 
-// create the connection to database
 const connection = mysql.createConnection({
 	host: DB_HOST,
 	user: DB_USER,
@@ -13,16 +10,19 @@ const connection = mysql.createConnection({
 	database: DATABASE
 })
 
-// console.log(connection)
+const app = express()
 
-// simple query
-connection.query(
-	'SELECT * FROM `events` WHERE `name` = "Christian Broberg"',
-	function (err, results, fields) {
-		// console.log(err)
-		console.log(results) // results contains rows returned by server
-		// console.log(fields) // fields contains extra meta data about results, if available
-	}
-)
+app.get('/posts', (req, res) => {
+	connection.connect()
 
-connection.end()
+	connection.query('SELECT * FROM `events` WHERE `name` = "Christian Broberg"', (error, results, fields) => {
+		if (error) throw error
+		res.send(results)
+	})
+
+	connection.end()
+})
+// Start the server
+app.listen(3000, () => {
+	console.log('Go to http://localhost:3000/posts to see posts')
+})
