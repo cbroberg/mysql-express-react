@@ -13,17 +13,46 @@ const connection = mysql.createConnection({
 
 const app = express()
 
-app.get('/posts', (req, res) => {
-	// connection.connect()
+// Standard querY
+const QUERY = {
+	selectAll: 'SELECT * FROM events',
+	select10: 'SELECT * FROM events LIMIT 0, 10',
+}
 
-	connection.query('SELECT * FROM `events` WHERE `name` = "Christian Broberg"', (error, results, fields) => {
+app.get('/events', (req, res) => {
+	connection.query(QUERY.selectAll, (error, results, fields) => {
 		if (error) throw error
-		res.send(results)
+		res.json(results)
 	})
 
-	connection.end()
 })
+
+app.get('/events/add', (req, res) => {
+	const { date, name, birthday, content } = req.query
+	console.log(date, name, birthday, content)
+
+	const INSERT_EVENT = `INSERT INTO events (date, name, birthday, content) VALUES('${date}', '${name}', '${birthday}', '${content}')`
+
+	connection.query(INSERT_EVENT, (error, results, fields) => {
+		if (error) {
+			res.send(error)
+		} else {
+			res.send('Event succesfully added!')
+		}
+	})
+})
+
+
+
+app.get('/events/new', (req, res) => {
+	connection.query("INSERT INTO events (id, date, name, birthday, content) VALUES(6, '18-12-31', 'Nytårsaften', 0, 'Fest')", (error, results, fields) => {
+		if (error) throw error
+		res.json('Values inserted')
+	})
+
+})
+
 // Start the server
 app.listen(3005, () => {
-	console.log('Go to http://localhost:3005/posts to see posts')
+	console.log('Go to http://localhost:3005/ to see ', Date())
 })
