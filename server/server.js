@@ -1,5 +1,6 @@
 require('dotenv').load()
 const express = require('express')
+const bodyParser = require('body-parser')
 const cors = require('cors')
 const mysql = require('mysql2')
 
@@ -9,7 +10,8 @@ const connection = mysql.createConnection({
 	host: DB_HOST,
 	user: DB_USER,
 	password: PASSWORD,
-	database: DATABASE
+	database: DATABASE,
+	multipleStatements: true
 })
 
 connection.connect((error) => {
@@ -20,6 +22,9 @@ connection.connect((error) => {
 })
 
 const app = express()
+
+// parse application/json
+app.use(bodyParser.json())
 app.use(cors())
 
 // Standard querY
@@ -88,14 +93,16 @@ app.post('/events/add', (req, res) => {
 	})
 })
 
-app.post('/events/add_sp', (req, res) => {
-	const { date, name, birthday, content } = req.query
-	const INSERT_EVENT = `INSERT INTO events (date, name, birthday, content) VALUES('${date}', '${name}', '${birthday}', '${content}')`
-	connection.query(INSERT_EVENT, (error, results, fields) => {
+app.post('/events/add2', (req, res) => {
+	let body = req.body
+	console.log(req.body)
+	var sql = "SET @id = ?;SET @date = ?;SET @name = ?;SET @birthday = ?;SET @content = ?; \
+	CALL EventAddOrEdit(@id, @date, @name, @birthday, @content);"
+	connection.query(sql, [body.id, body.date, body.name, body.birthday, body.content], (error, results, fields) => {
 		if (error) {
 			res.send(error)
 		} else {
-			res.send('Event succesfully added!')
+			res.send(results)
 		}
 	})
 })
