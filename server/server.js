@@ -1,6 +1,8 @@
+// https://github.com/mysqljs/mysql 
+
 require('dotenv').load()
 const express = require('express')
-const bodyParser = require('body-parser')
+const helmet = require('helmet')
 const cors = require('cors')
 const mysql = require('mysql2')
 
@@ -23,8 +25,10 @@ connection.connect((error) => {
 
 const app = express()
 
-// parse application/json
-app.use(bodyParser.json())
+app.use(helmet())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 app.use(cors())
 
 // Standard querY
@@ -95,14 +99,13 @@ app.post('/events/add', (req, res) => {
 
 app.post('/events/add2', (req, res) => {
 	let body = req.body
-	console.log(req.body)
 	var sql = "SET @id = ?;SET @date = ?;SET @name = ?;SET @birthday = ?;SET @content = ?; \
 	CALL EventAddOrEdit(@id, @date, @name, @birthday, @content);"
 	connection.query(sql, [body.id, body.date, body.name, body.birthday, body.content], (error, results, fields) => {
 		if (error) {
 			res.send(error)
 		} else {
-			res.send(results)
+			res.send('Event inserted in DB')
 		}
 	})
 })
