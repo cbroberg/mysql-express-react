@@ -3,6 +3,7 @@
 require('dotenv').load()
 const express = require('express')
 const helmet = require('helmet')
+const frameguard = require('frameguard')
 const cors = require('cors')
 const mysql = require('mysql2')
 
@@ -26,12 +27,19 @@ connection.connect((error) => {
 const app = express()
 
 app.use(helmet())
+
+// Allow from a specific host:
+app.use(frameguard({
+	action: 'allow-from',
+	domain: 'http://localhost:3005/'
+}))
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(cors())
 
-// Standard querY
+// Standard queries
 const QUERY = {
 	selectAll: 'SELECT * FROM events',
 	select10: 'SELECT * FROM events LIMIT 0, 10',
@@ -44,8 +52,10 @@ app.get('/', (req, res) => {
 app.get('/events', (req, res) => {
 	connection.query(QUERY.selectAll, (error, results, fields) => {
 		if (error) {
+			console.error(error)
 			res.send(error)
 		} else {
+			console.log('Results transmitted to caller')
 			res.json(results)
 		}
 	})
@@ -55,8 +65,10 @@ app.get('/event/:id', (req, res) => {
 	let id = req.params.id
 	connection.query('SELECT * FROM events WHERE id = ?', [id], (error, results, fields) => {
 		if (error) {
+			console.error(error)
 			res.send(error)
 		} else {
+			console.log('Results transmitted to caller')
 			res.json(results)
 		}
 	})
@@ -66,8 +78,10 @@ app.delete('/event/:id', (req, res) => {
 	let id = req.params.id
 	connection.query('DELETE FROM events WHERE id = ?', [id], (error, results, fields) => {
 		if (error) {
+			console.error(error)
 			res.send(error)
 		} else {
+			console.log(`Deleted record with ID: ${id}`)
 			res.send(`Deleted record with ID: ${id}`)
 		}
 	})
@@ -75,11 +89,13 @@ app.delete('/event/:id', (req, res) => {
 
 app.get('/events/add', (req, res) => {
 	const { date, name, birthday, content } = req.query
-	const INSERT_EVENT = `INSERT INTO events (date, name, birthday, content) VALUES('${date}', '${name}', '${birthday}', '${content}')`
-	connection.query(INSERT_EVENT, (error, results, fields) => {
+	const INSERT = `INSERT INTO events (date, name, birthday, content) VALUES('${date}', '${name}', '${birthday}', '${content}')`
+	connection.query(INSERT, (error, results, fields) => {
 		if (error) {
+			console.error(error)
 			res.send(error)
 		} else {
+			console.log('Event succesfully added!')
 			res.send('Event succesfully added!')
 		}
 	})
@@ -87,11 +103,13 @@ app.get('/events/add', (req, res) => {
 
 app.post('/events/add', (req, res) => {
 	const { date, name, birthday, content } = req.query
-	const INSERT_EVENT = `INSERT INTO events (date, name, birthday, content) VALUES('${date}', '${name}', '${birthday}', '${content}')`
-	connection.query(INSERT_EVENT, (error, results, fields) => {
+	const INSERT = `INSERT INTO events (date, name, birthday, content) VALUES('${date}', '${name}', '${birthday}', '${content}')`
+	connection.query(INSERT, (error, results, fields) => {
 		if (error) {
+			console.error(error)
 			res.send(error)
 		} else {
+			console.log('Event succesfully added!')
 			res.send('Event succesfully added!')
 		}
 	})
@@ -103,8 +121,10 @@ app.post('/events/add2', (req, res) => {
 	CALL EventAddOrEdit(@id, @date, @name, @birthday, @content);"
 	connection.query(sql, [body.id, body.date, body.name, body.birthday, body.content], (error, results, fields) => {
 		if (error) {
+			console.error(error)
 			res.send(error)
 		} else {
+			console.log('Event inserted in DB')
 			res.send('Event inserted in DB')
 		}
 	})
